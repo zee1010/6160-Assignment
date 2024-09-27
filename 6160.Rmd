@@ -184,10 +184,10 @@ gDataDrops <- createGData(gData = gDataDrops, pheno = dropsPhenoList)
 GWASDrops <- runSingleTraitGwas(gData = gDataDrops,
                                 trials = "Mur13W",
                                 traits = c("grain.yield"))
+
 # The 10 objects are trait, snp, chr, pos, allFreq, pvalue, effect, effectSe, RLR2 and LOD
 #b) Plot a histogram for grain yield GWAS SNP P-values, choosing a suitable “bin” number. What is this the p-value the probability of? See the beginning of the article for background. Are a large proportion of markers significant? Is this expected or unexpected?
 hist(GWASDrops$GWAResult$Mur13W$pValue, xlab = "p-value", main="grain yield GWAS SNP P-values of Mur13W")
- 
 #The p-value is representative of whether a SNP is statistically significant for the phenotype, grain yield in Mur13W. 
 #From the plot we can see that majority of the SNPs are not statistically significant as they are well above the 0.05 threshold. This is expected according to the article, as most SNPs are expected to have no impact. This is because not all SNPs will impact a particular phenotype, in this case grain yield. This also results in a relatively uniform qq plot distributed on [0,1] seen below.
 #c) As a related point, the command plot(GWASDrops, plotType = “qq”, trait = “grain.yield”) plots an xy figure. What are on the two axes? The vast majority of points on this plot follow a 1:1 straight line. What does this indicate?
