@@ -1,0 +1,101 @@
+---
+title: "6160 quiz 8"
+output:
+  word_document: default
+  html_document: default
+date: '2023-04-12'
+---
+
+```{r}
+##For this quiz, please work through the “Introduction to the statgenGWAS package,” and answerthe questions below. This introduction is found at: https://cran.r-project.org/web/packages/statgenGWAS/vignettes/GWAS.html
+
+#1. The software has available data with entry genotypes, “dropsMarkers,” the marker positions and alleles, “dropsMap”, and traits, “dropsPheno.” Examine each of these data sets.
+#install.packages("statgenGWAS")
+library(statgenGWAS)
+library(dplyr)
+data(dropsMarkers,  dropsMap, dropsPheno) 
+```
+#a) Take a subset of “dropsMarkers.” What are column names? Row names? Explain the data in the matrix.
+```{r}
+
+#first 100 rows and columns
+subset <- dropsMarkers[1:100,1:100]
+# column names are
+colnames(subset)
+#Row names are
+row.names(subset)
+
+#Drops data set is  from the European union project DROPS or drought tolerant yielding plants. It contains 256 maize hybrids fed with with rain fed or irrigated water regimes through 2012 and 2013. Only 10 experiments from the whole project have been chosen, two for each environmental condition The main purpose of the dataset is the be able to characterize genotype by environental interaction and determine genetic variability in maize. This project was split into 3 separate data frames, dropsMarkers, dropsMaps and dropsPhenos
+
+##a)This data frame contains information on 41722 loci for the 246 parental lines. The matrix is coded in 0 1 and 2, which indicate minor allele, heterozygote and major allele respectively.The genotypes in the matrix have been filtered at minor allele frquency of less than 1 percent. The full data frame contains 246 rows and 41723 columns we subsetted the first 100 rows and columns.
+```
+
+##b) What information is in “dropsMap?”
+```{r}
+#this data frame contains information about the 41722 loci that were genotyped. It contains name of SNP, chromosome number of the B73 reference genome(V2), the position on the B73 reference genome the SNP is present, the first original allele, allele1 and the second original allele, allele 2.
+```
+
+##c) For “dropsPheno”, name two traits that are measured. How many genotypes are in the data? Explain why there are 2,460 lines in the data given the number of genotypes.
+```{r}
+#traits measured:ear height and tassel height
+#number of genotypes:
+unique(dropsPheno$parent1) #246
+#There are 2,460 lines in the data because there are replicates of the same genotype multiple times for each of the 10 experiments
+```
+
+#2. After some filtering, a “gData” object is created that includes the data from above. (The final command in this process is “gDataDrops <- createGData(gData = gDataDrops, pheno = dropsPhenoList)”) The gDataDrops objects contains five objects that hold data. What is in each of these objects?
+```{r}
+## Add genotypes as row names of dropsMarkers and drop Ind column.
+rownames(dropsMarkers) <- dropsMarkers[["Ind"]]
+dropsMarkers <- dropsMarkers[colnames(dropsMarkers) != "Ind"]
+## Add genotypes as row names of dropsMap.
+rownames(dropsMap) <- dropsMap[["SNP.names"]]
+## Rename Chomosome and Position columns.
+colnames(dropsMap)[match(c("Chromosome", "Position"), colnames(dropsMap))] <- c("chr", "pos")
+## Create a gData object containing map and marker information.
+gDataDrops <- createGData(geno = dropsMarkers, map = dropsMap)
+## Rename Variety_ID to genotype.
+colnames(dropsPheno)[colnames(dropsPheno) == "Variety_ID"] <- "genotype"
+## Select relevant columns and convert data to a list.
+dropsPhenoList <- split(x = dropsPheno[c("genotype", "grain.yield",
+                                         "grain.number", "seed.size",
+                                         "anthesis", "silking", "plant.height",
+                                         "tassel.height", "ear.height")], 
+                        f = dropsPheno[["Experiment"]])
+## Add phenotypic data to gDataDrops.
+gDataDrops <- createGData(gData = gDataDrops, pheno = dropsPhenoList)
+
+#the 5 objects that hold the data are map, marker, pheno, kinship and covar. Map contains chromsome and position information, marker shows coded information regarding which alleles are present  0 1 and 2, which indicate minor allele, heterozygote and major allele respectively,pheno gives the phenotypes, Kinship matrix describes relatedness between different genotypes and is used for association mapping, currently this information is not present in gDataDrops. Finally the last object is covar, which can be used to store additional variables. 
+```
+#3. Use “gDataDrops” as input into the runSingleTraitGwas function to do the analysis. As done in the tutorial, limit your analysis to the “Mur13W” location and include at least “grain.yield” in the analysis. The output of this function produces a list of variables with GWAS results and data information. I called this output “GWASDrops.”
+#a) “GWASDrops” for Mur13W contains 10 objects. What are their names?
+```{r}
+GWASDrops <- runSingleTraitGwas(gData = gDataDrops,
+                                trials = "Mur13W",
+                                traits = c("grain.yield"))
+# The 10 objects are trait, snp, chr, pos, allFreq, pvalue, effect, effectSe, RLR2 and LOD
+```
+
+#b) Plot a histogram for grain yield GWAS SNP P-values, choosing a suitable “bin” number. What is this the p-value the probability of? See the beginning of the article for background. Are a large proportion of markers significant? Is this expected or unexpected?
+```{r}
+hist(GWASDrops$GWAResult$Mur13W$pValue, xlab = "p-value", main="grain yield GWAS SNP P-values of Mur13W")
+#The p-value is representative of whether a SNP is statistically significant for the phenotype, grain yield in Mur13W. 
+#From the plot we can see that majority of the SNPs are not statistically significant as they are well above the 0.05 threshold. This is expected according to the article, as most SNPs are expected to have no impact. This also results in a relatively uniform qq plot distributed on [0,1] seen below.
+```
+
+#c) As a related point, the command plot(GWASDrops, plotType = "qq", trait = "grain.yield") plots an xy figure. What are on the two axes? The vast majority of points on this plot follow a 1:1 straight line. What does this indicate?
+```{r}
+plot(GWASDrops, plotType = "qq", trait = "grain.yield")
+
+#This plot shoes us the quality of the GWAS model. The x axis shows expected -log10 p values where as the y axis shows observed -log10 pvalues. Values  consistently above the y=x line would indicate inflation, whereas values consistently below would indicate deflation. Generally it is expected that most SNPs, especially on the left side of the plot will follow the y=x line. On the left side deviations are possible and would indicate that SNPs have an impact on phenotype(usually SNPs in linkage disequilibrium). Since our qqplot mainly follows the y=x trend it shows that it is a good model and most SNPs have no effect.
+```
+#4. Two conceptual questions:
+#a) You can exclude SNP sites where the minor allele is below a threshold. Why would one want to do this?
+```{r}
+#Excluding SNP sites below a specific, data dependent threshold minimizes errors in data. Low frequencies could indicate unreliable calls and could be a source of error. They can also inflate statistical estimates downstream so it is beneficial to remove these sites for analysis. 
+```
+#b) How is the k matrix used in the analysis?
+```{r}
+#The k or kinship matrix describes relatedness between different genotypes nad is used for association mapping. It can be computed while using the runsingleTraitGWAS function or directly using the kinship function. There are 4 possible methods to use in the analysis. This includes kinshipMethod= "astle"(using the covariance between the scaled SNP-scores) which is the default, "IBS"(idenity by state), vanRaden and user defined. In general same kinship matrix is applied to all SNPs through GLSmethod="single", unless changed to "multi", in which case it becomes chromosome specific
+```
+
