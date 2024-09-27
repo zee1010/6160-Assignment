@@ -1,50 +1,164 @@
----
-title: "6160 quiz 8"
-output:
-  word_document: default
-  html_document: default
-date: '2023-04-12'
----
-
-```{r}
+6160 quiz 8
+2023-04-12
 ##For this quiz, please work through the “Introduction to the statgenGWAS package,” and answerthe questions below. This introduction is found at: https://cran.r-project.org/web/packages/statgenGWAS/vignettes/GWAS.html
 
 #1. The software has available data with entry genotypes, “dropsMarkers,” the marker positions and alleles, “dropsMap”, and traits, “dropsPheno.” Examine each of these data sets.
 #install.packages("statgenGWAS")
 library(statgenGWAS)
+## Warning: package 'statgenGWAS' was built under R version 4.1.3
 library(dplyr)
+## 
+## Attaching package: 'dplyr'
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
 data(dropsMarkers,  dropsMap, dropsPheno) 
-```
 #a) Take a subset of “dropsMarkers.” What are column names? Row names? Explain the data in the matrix.
-```{r}
-
 #first 100 rows and columns
 subset <- dropsMarkers[1:100,1:100]
 # column names are
 colnames(subset)
+##   [1] "Ind"                    "SYN83"                  "PZE-101000060"         
+##   [4] "PZE-101000088"          "PZE-101000083"          "PZE-101000108"         
+##   [7] "PZE-101000111"          "PZE-101000161"          "PZE-101000169"         
+##  [10] "PZE-101000209"          "PZE-101000256"          "PZE-101000301"         
+##  [13] "PZE-101000344"          "PZE-101000348"          "PZE-101000349"         
+##  [16] "PZE-101000360"          "PZE-101000370"          "PZE-101000424"         
+##  [19] "PZE-101000431"          "PZE-101000442"          "PUT-163a-71312844-3126"
+##  [22] "SYN8296"                "PZE-101000530"          "PZE-101000610"         
+##  [25] "PZE-101000659"          "PZE-101000673"          "PZE-101000740"         
+##  [28] "PZE-101000754"          "PZE-101000788"          "SYN9660"               
+##  [31] "SYN9659"                "SYN10558"               "PZE-101001044"         
+##  [34] "PZE-101001094"          "PZE-101001103"          "PZE-101001107"         
+##  [37] "PZE-101001108"          "PZE-101001110"          "SYN10560"              
+##  [40] "PZE-101001114"          "PZE-101001115"          "PZE-101001116"         
+##  [43] "SYN13279"               "SYN13282"               "SYN6001"               
+##  [46] "PZE-101001280"          "PZE-101001320"          "PZE-101001380"         
+##  [49] "SYN27251"               "PUT-163a-5499487-2275"  "PZE-101001587"         
+##  [52] "SYN38927"               "SYN35330"               "SYN35346"              
+##  [55] "SYN35327"               "SYN35339"               "SYN35335"              
+##  [58] "SYN35336"               "SYN35329"               "SYN35333"              
+##  [61] "SYN35328"               "SYN35344"               "SYN38932"              
+##  [64] "SYN38934"               "SYN38928"               "SYNGENTA5822"          
+##  [67] "SYN38926"               "PUT-163a-16926058-1127" "SYN35337"              
+##  [70] "PUT-163a-60359045-2871" "PZE-101002081"          "PZA03613.2"            
+##  [73] "SYN2547"                "SYN2545"                "PZE-101002282"         
+##  [76] "SYN11121"               "SYN11115"               "SYN11114"              
+##  [79] "PZE-101002367"          "SYN11122"               "SYN11127"              
+##  [82] "SYNGENTA17310"          "SYN30742"               "SYN30740"              
+##  [85] "SYN30750"               "SYN30751"               "SYN30756"              
+##  [88] "SYN30757"               "SYN30738"               "SYN30746"              
+##  [91] "SYN30752"               "SYN30737"               "PZE-101002887"         
+##  [94] "PZE-101002919"          "SYN30755"               "PZE-101003026"         
+##  [97] "PZE-101003031"          "PZE-101003115"          "PZE-101003133"         
+## [100] "PZE-101003135"
 #Row names are
 row.names(subset)
-
+##   [1] "1"   "2"   "3"   "4"   "5"   "6"   "7"   "8"   "9"   "10"  "11"  "12" 
+##  [13] "13"  "14"  "15"  "16"  "17"  "18"  "19"  "20"  "21"  "22"  "23"  "24" 
+##  [25] "25"  "26"  "27"  "28"  "29"  "30"  "31"  "32"  "33"  "34"  "35"  "36" 
+##  [37] "37"  "38"  "39"  "40"  "41"  "42"  "43"  "44"  "45"  "46"  "47"  "48" 
+##  [49] "49"  "50"  "51"  "52"  "53"  "54"  "55"  "56"  "57"  "58"  "59"  "60" 
+##  [61] "61"  "62"  "63"  "64"  "65"  "66"  "67"  "68"  "69"  "70"  "71"  "72" 
+##  [73] "73"  "74"  "75"  "76"  "77"  "78"  "79"  "80"  "81"  "82"  "83"  "84" 
+##  [85] "85"  "86"  "87"  "88"  "89"  "90"  "91"  "92"  "93"  "94"  "95"  "96" 
+##  [97] "97"  "98"  "99"  "100"
 #Drops data set is  from the European union project DROPS or drought tolerant yielding plants. It contains 256 maize hybrids fed with with rain fed or irrigated water regimes through 2012 and 2013. Only 10 experiments from the whole project have been chosen, two for each environmental condition The main purpose of the dataset is the be able to characterize genotype by environental interaction and determine genetic variability in maize. This project was split into 3 separate data frames, dropsMarkers, dropsMaps and dropsPhenos
 
 ##a)This data frame contains information on 41722 loci for the 246 parental lines. The matrix is coded in 0 1 and 2, which indicate minor allele, heterozygote and major allele respectively.The genotypes in the matrix have been filtered at minor allele frquency of less than 1 percent. The full data frame contains 246 rows and 41723 columns we subsetted the first 100 rows and columns.
-```
-
 ##b) What information is in “dropsMap?”
-```{r}
 #this data frame contains information about the 41722 loci that were genotyped. It contains name of SNP, chromosome number of the B73 reference genome(V2), the position on the B73 reference genome the SNP is present, the first original allele, allele1 and the second original allele, allele 2.
-```
-
 ##c) For “dropsPheno”, name two traits that are measured. How many genotypes are in the data? Explain why there are 2,460 lines in the data given the number of genotypes.
-```{r}
 #traits measured:ear height and tassel height
 #number of genotypes:
 unique(dropsPheno$parent1) #246
-#There are 2,460 lines in the data because there are replicates of the same genotype multiple times for each of the 10 experiments
-```
-
+##   [1] "11430_usda"          "A3_inra"             "A310_inra"          
+##   [4] "A347_inra"           "A374_inra"           "A375_inra"          
+##   [7] "A554_inra"           "AS5707_usda"         "B100_uh"            
+##  [10] "B104_inra"           "B105_inra"           "B106_inra"          
+##  [13] "B107_inra"           "B108_uh"             "B109_uh"            
+##  [16] "B110_uh"             "B113_uh"             "B37_inra"           
+##  [19] "B73_inra"            "B84_inra"            "B89_inra"           
+##  [22] "B97_usa"             "B98_uh"              "C103_inra"          
+##  [25] "CO109_inra"          "CR1Ht_usda"          "D09_uh"             
+##  [28] "DE811_inra"          "DK4676A_usda"        "DK78010_usda"       
+##  [31] "DK78371A_usda"       "DKFAPW_usda"         "DKFBHJ_usda"        
+##  [34] "DKIBO2_usda"         "DKMBST_usda"         "EM1027_inra"        
+##  [37] "EM1163_inra"         "EA3076_csic"         "EC136_ciam"         
+##  [40] "EC140_ciam"          "EC151_ciam"          "EC169_ciam"         
+##  [43] "EC175_ciam"          "EC232_ciam"          "EC242C_ciam"        
+##  [46] "EC334_ciam"          "EP10_csic"           "EP2008-18_csic"     
+##  [49] "EP2008-22_csic"      "EP29_csic"           "EP51_csic"          
+##  [52] "EP52_csic"           "EP55_csic"           "EP67_csic"          
+##  [55] "EP72_csic"           "EP77_csic"           "EZ11A_csic"         
+##  [58] "EZ18_csic"           "EZ31_csic"           "EZ35_csic"          
+##  [61] "EZ36_csic"           "EZ37_csic"           "EZ38_csic"          
+##  [64] "EZ40_csic"           "EZ42_csic"           "EZ47_csic"          
+##  [67] "EZ48_csic"           "F04401_inra"         "F04402_inra"        
+##  [70] "F04701_inra"         "F04702_inra"         "F05101_inra"        
+##  [73] "F05404_inra"         "F1808_inra"          "FC1890_inra"        
+##  [76] "FV218_inra"          "FV252_inra"          "FV353_inra"         
+##  [79] "FV354_inra"          "F608_inra"           "F618_inra"          
+##  [82] "F7001_inra"          "F7019_inra"          "F7025_inra"         
+##  [85] "F7028_inra"          "F7057_inra"          "F7058_inra"         
+##  [88] "F7081_inra"          "F7082_inra"          "F712_inra"          
+##  [91] "F748_inra"           "F752_inra"           "F838_inra"          
+##  [94] "F874_inra"           "F888_inra"           "F894_inra"          
+##  [97] "F908_inra"           "F912_inra"           "F918_inra"          
+## [100] "F922_inra"           "F924_inra"           "F98902_inra"        
+## [103] "FP1_inra"            "FR19_usda"           "FR697_ifsi"         
+## [106] "H99_inra"            "HMV5301_Martonvasar" "HMV5325_Martonvasar"
+## [109] "HMV5343_Martonvasar" "HMV5347_Martonvasar" "HMV5405_Martonvasar"
+## [112] "HMV5409_Martonvasar" "HMV5422_Martonvasar" "HMV5502_Martonvasar"
+## [115] "I198_inra"           "I233_inra"           "I238_inra"          
+## [118] "I242_inra"           "I261_inra"           "I267_inra"          
+## [121] "IDT_inra"            "LAN496_inra"         "LH123Ht_usda"       
+## [124] "LH145_usda"          "LH38_usda"           "LH39_usda"          
+## [127] "LH59_usda"           "LH60_usda"           "LH65_usda"          
+## [130] "LH74_inra"           "LH82_inra"           "LH93_usda"          
+## [133] "Lo1016_bergamo"      "Lo1026_bergamo"      "Lo1035_bergamo"     
+## [136] "Lo1038_bergamo"      "Lo1056_bergamo"      "Lo1063_bergamo"     
+## [139] "Lo1087_bergamo"      "Lo1094_bergamo"      "Lo1095_bergamo"     
+## [142] "Lo1101_bergamo"      "Lo1106_bergamo"      "Lo1123_bergamo"     
+## [145] "Lo1124_bergamo"      "Lo1172_bergamo"      "Lo1180_bergamo"     
+## [148] "Lo1187_bergamo"      "Lo1199_bergamo"      "Lo1203_bergamo"     
+## [151] "Lo1223_bergamo"      "Lo1242_bergamo"      "Lo1251_bergamo"     
+## [154] "Lo1253_bergamo"      "Lo1261_bergamo"      "Lo1266_bergamo"     
+## [157] "Lo1270_bergamo"      "Lo1273_bergamo"      "Lo1274_bergamo"     
+## [160] "Lo1280_bergamo"      "Lo1282_bergamo"      "Lo1284_bergamo"     
+## [163] "Lo1288_bergamo"      "Lo1290_bergamo"      "Lo1301_bergamo"     
+## [166] "Lo904_bergamo"       "Lp5_usda"            "ML606_usda"         
+## [169] "Mo15W_inra"          "Mo17_inra"           "MS153_inra"         
+## [172] "MS71_uh"             "N16_inra"            "N192_usa"           
+## [175] "N22_inra"            "N25_inra"            "N6_inra"            
+## [178] "NC290_uh"            "NC358_uh"            "NDB8_inra"          
+## [181] "NK764_usda"          "NK807_usda"          "NQ508_usda"         
+## [184] "NS701_usda"          "Oh02_inra"           "Oh33_inra"          
+## [187] "Oh40B_inra"          "Oh43_inra"           "Os426_inra"         
+## [190] "P465P_inra"          "Pa36_inra"           "Pa405_uh"           
+## [193] "Pa91_inra"           "PB116_inra"          "PB98TR_inra"        
+## [196] "PH207_usda"          "PHB09_usda"          "PHG35_usda"         
+## [199] "PHG39_usda"          "PHG47_usda"          "PHG50_usda"         
+## [202] "PHG71_usda"          "PHG80_usda"          "PHG83_usda"         
+## [205] "PHG84_usda"          "PHG86_usda"          "PHH93_usda"         
+## [208] "PHJ40_usda"          "PHK29_usda"          "PHK76_usda"         
+## [211] "PHR36_usda"          "PHT77_usda"          "PHV63_usda"         
+## [214] "PHW65_usda"          "PHZ51_usda"          "SC-Malawi_cim"      
+## [217] "SGI061_ifsi"         "UH_2500_uh"          "UH_6102_uh"         
+## [220] "UH_6179_uh"          "UH_P024_uh"          "UH_P060_uh"         
+## [223] "UH_P064_uh"          "UH_P074_uh"          "UH_P087_uh"         
+## [226] "UH_P089_uh"          "UH_P104_uh"          "UH_P115_uh"         
+## [229] "UH_P128_uh"          "UH_P148_uh"          "UH_S018_uh"         
+## [232] "UH_S020_uh"          "UH_S025_uh"          "UH250_uh"           
+## [235] "UH304_uh"            "Va26_inra"           "W117_inra"          
+## [238] "W153R_usa"           "W182E_inra"          "W23_uh"             
+## [241] "W602S_uh"            "W604S_uh"            "W64A_inra"          
+## [244] "W9_inra"             "W95115_inra"         "Wf9_inra"
+#There are 2,460 lines in the data because there are replicates of the same genotype for each of the 10 experiments
 #2. After some filtering, a “gData” object is created that includes the data from above. (The final command in this process is “gDataDrops <- createGData(gData = gDataDrops, pheno = dropsPhenoList)”) The gDataDrops objects contains five objects that hold data. What is in each of these objects?
-```{r}
 ## Add genotypes as row names of dropsMarkers and drop Ind column.
 rownames(dropsMarkers) <- dropsMarkers[["Ind"]]
 dropsMarkers <- dropsMarkers[colnames(dropsMarkers) != "Ind"]
@@ -66,36 +180,21 @@ dropsPhenoList <- split(x = dropsPheno[c("genotype", "grain.yield",
 gDataDrops <- createGData(gData = gDataDrops, pheno = dropsPhenoList)
 
 #the 5 objects that hold the data are map, marker, pheno, kinship and covar. Map contains chromsome and position information, marker shows coded information regarding which alleles are present  0 1 and 2, which indicate minor allele, heterozygote and major allele respectively,pheno gives the phenotypes, Kinship matrix describes relatedness between different genotypes and is used for association mapping, currently this information is not present in gDataDrops. Finally the last object is covar, which can be used to store additional variables. 
-```
-#3. Use “gDataDrops” as input into the runSingleTraitGwas function to do the analysis. As done in the tutorial, limit your analysis to the “Mur13W” location and include at least “grain.yield” in the analysis. The output of this function produces a list of variables with GWAS results and data information. I called this output “GWASDrops.”
-#a) “GWASDrops” for Mur13W contains 10 objects. What are their names?
-```{r}
+#3. Use “gDataDrops” as input into the runSingleTraitGwas function to do the analysis. As done in the tutorial, limit your analysis to the “Mur13W” location and include at least “grain.yield” in the analysis. The output of this function produces a list of variables with GWAS results and data information. I called this output “GWASDrops.” #a) “GWASDrops” for Mur13W contains 10 objects. What are their names?
 GWASDrops <- runSingleTraitGwas(gData = gDataDrops,
                                 trials = "Mur13W",
                                 traits = c("grain.yield"))
 # The 10 objects are trait, snp, chr, pos, allFreq, pvalue, effect, effectSe, RLR2 and LOD
-```
-
 #b) Plot a histogram for grain yield GWAS SNP P-values, choosing a suitable “bin” number. What is this the p-value the probability of? See the beginning of the article for background. Are a large proportion of markers significant? Is this expected or unexpected?
-```{r}
 hist(GWASDrops$GWAResult$Mur13W$pValue, xlab = "p-value", main="grain yield GWAS SNP P-values of Mur13W")
+ 
 #The p-value is representative of whether a SNP is statistically significant for the phenotype, grain yield in Mur13W. 
-#From the plot we can see that majority of the SNPs are not statistically significant as they are well above the 0.05 threshold. This is expected according to the article, as most SNPs are expected to have no impact. This also results in a relatively uniform qq plot distributed on [0,1] seen below.
-```
-
-#c) As a related point, the command plot(GWASDrops, plotType = "qq", trait = "grain.yield") plots an xy figure. What are on the two axes? The vast majority of points on this plot follow a 1:1 straight line. What does this indicate?
-```{r}
+#From the plot we can see that majority of the SNPs are not statistically significant as they are well above the 0.05 threshold. This is expected according to the article, as most SNPs are expected to have no impact. This is because not all SNPs will impact a particular phenotype, in this case grain yield. This also results in a relatively uniform qq plot distributed on [0,1] seen below.
+#c) As a related point, the command plot(GWASDrops, plotType = “qq”, trait = “grain.yield”) plots an xy figure. What are on the two axes? The vast majority of points on this plot follow a 1:1 straight line. What does this indicate?
 plot(GWASDrops, plotType = "qq", trait = "grain.yield")
-
-#This plot shoes us the quality of the GWAS model. The x axis shows expected -log10 p values where as the y axis shows observed -log10 pvalues. Values  consistently above the y=x line would indicate inflation, whereas values consistently below would indicate deflation. Generally it is expected that most SNPs, especially on the left side of the plot will follow the y=x line. On the left side deviations are possible and would indicate that SNPs have an impact on phenotype(usually SNPs in linkage disequilibrium). Since our qqplot mainly follows the y=x trend it shows that it is a good model and most SNPs have no effect.
-```
-#4. Two conceptual questions:
-#a) You can exclude SNP sites where the minor allele is below a threshold. Why would one want to do this?
-```{r}
+ 
+#This plot shoes us the quality of the GWAS model. The x axis shows expected -log10 p values whereas the y axis shows observed -log10 pvalues. Our qqplot mainly follows the y=x trend it shows that it is a good model and most SNPs have no effect on the grain yield. Values consistently above the y=x line would indicate inflation, whereas values consistently below would indicate deflation. Generally it is expected that most SNPs, especially on the left side of the plot will follow the y=x line. On the left side deviations are possible and would indicate that SNPs have an impact on phenotype(usually SNPs in linkage disequilibrium). 
+#4. Two conceptual questions: #a) You can exclude SNP sites where the minor allele is below a threshold. Why would one want to do this?
 #Excluding SNP sites below a specific, data dependent threshold minimizes errors in data. Low frequencies could indicate unreliable calls and could be a source of error. They can also inflate statistical estimates downstream so it is beneficial to remove these sites for analysis. 
-```
 #b) How is the k matrix used in the analysis?
-```{r}
 #The k or kinship matrix describes relatedness between different genotypes nad is used for association mapping. It can be computed while using the runsingleTraitGWAS function or directly using the kinship function. There are 4 possible methods to use in the analysis. This includes kinshipMethod= "astle"(using the covariance between the scaled SNP-scores) which is the default, "IBS"(idenity by state), vanRaden and user defined. In general same kinship matrix is applied to all SNPs through GLSmethod="single", unless changed to "multi", in which case it becomes chromosome specific
-```
-
